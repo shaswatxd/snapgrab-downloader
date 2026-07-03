@@ -30,7 +30,6 @@
       ],
       "icon": "public/icon.png",
       "signAndEditExecutable": false,
-      "artifactName": "SnapGrab.${version}.${ext}",
       "publish": {
         "provider": "github",
         "owner": "shaswatxd",
@@ -44,7 +43,7 @@
       "artifactName": "SnapGrab.Setup.${version}.exe"
     },
     "portable": {
-      "artifactName": "SnapGrab.Portable.exe"
+      "artifactName": "SnapGrab.Portable.${version}.exe"
     },
     "files": [
       "main.js",

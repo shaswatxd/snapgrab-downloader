@@ -56,11 +56,11 @@
       <p class="hero-subtitle">SnapGrab is a premium, glassmorphic desktop downloader powered by yt-dlp and FFmpeg. Drag, drop, fetch, and download from over 1,000 websites in HD quality.</p>
       
       <div class="hero-actions">
-        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Setup.exe" class="btn-primary">
+        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Setup.exe" class="btn-primary" id="download-installer">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span>Download Installer (Windows)</span>
         </a>
-        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Portable.exe" class="btn-secondary" title="Portable builds do not install app updates automatically">
+        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Portable.exe" class="btn-secondary" id="download-portable" title="Portable builds do not install app updates automatically">
           <span>Portable Edition</span>
         </a>
         <a href="install-dependencies.bat" download class="btn-dependencies">
@@ -218,7 +218,7 @@
       <p class="hero-subtitle">Get the proper, fully packaged installer including yt-dlp and FFmpeg binaries. Install once, run forever.</p>
       
       <div class="hero-actions center">
-        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Setup.exe" class="btn-primary">
+        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Setup.exe" class="btn-primary" id="download-installer-cta">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span>Download Installer for Windows</span>
         </a>
@@ -230,5 +230,28 @@
   <footer class="footer">
     <p>&copy; 2026 SnapGrab. Released under the ISC License. Made for premium performance.</p>
   </footer>
+
+  <script>
+    // Dynamically fetch latest release version and update download links
+    fetch('https://api.github.com/repos/shaswatxd/snapgrab-downloader/releases/latest')
+      .then(res => res.json())
+      .then(data => {
+        const version = data.tag_name.replace('v', '');
+        const installerBtn = document.getElementById('download-installer');
+        const portableBtn = document.getElementById('download-portable');
+        const installerCTA = document.getElementById('download-installer-cta');
+        
+        if (installerBtn) {
+          installerBtn.href = `https://github.com/shaswatxd/snapgrab-downloader/releases/download/${data.tag_name}/SnapGrab.Setup.${version}.exe`;
+        }
+        if (portableBtn) {
+          portableBtn.href = `https://github.com/shaswatxd/snapgrab-downloader/releases/download/${data.tag_name}/SnapGrab.Portable.${version}.exe`;
+        }
+        if (installerCTA) {
+          installerCTA.href = `https://github.com/shaswatxd/snapgrab-downloader/releases/download/${data.tag_name}/SnapGrab.Setup.${version}.exe`;
+        }
+      })
+      .catch(err => console.error('Failed to fetch latest release:', err));
+  </script>
 </body>
 </html>
