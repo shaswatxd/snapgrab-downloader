@@ -6,7 +6,7 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
-    "clean": "if (Test-Path dist) { Remove-Item -Recurse -Force dist }",
+    "clean": "if exist dist rmdir /s /q dist",
     "build": "npm run clean && electron-builder --win",
     "pack": "npm run clean && electron-builder --dir",
     "release": "npm run clean && electron-builder --win --publish always",
