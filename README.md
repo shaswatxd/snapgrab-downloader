@@ -66,6 +66,12 @@ npm run build
 ## 🌐 Landing Page Website
 The `website/` directory contains a premium, single-page landing website that describes the product. You can deploy it directly to GitHub Pages or any static host to showcase your application.
 
+## Automatic Releases & In-App Updates
+
+Every push to the `main` branch triggers `.github/workflows/release.yml`. The workflow assigns a new `1.1.x` build version and publishes the NSIS installer, portable build, blockmap, and `latest.yml` to a public GitHub Release.
+
+Installed NSIS builds check that release feed automatically and download new app versions in the background. Once ready, **Settings & Updates → Restart & Update** installs the release. The portable edition can be replaced manually from the website. The website uses stable `releases/latest/download/...` links, so its HTML does not need editing for each version.
+
 ---
 
 ## 📄 License

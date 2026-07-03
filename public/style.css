@@ -28,7 +28,7 @@
   --shadow-glow: 0 0 40px rgba(139, 92, 246, 0.15);
 }
 
-html { font-size: 16px; }
+html { font-size: 16px; scroll-behavior: smooth; }
 body {
   font-family: 'Inter', -apple-system, sans-serif;
   background: var(--bg-primary);
@@ -111,6 +111,11 @@ body {
   transition: all 0.2s;
 }
 .btn-icon:hover { background: rgba(139, 92, 246, 0.1); border-color: var(--border-hover); color: var(--accent-light); }
+.btn-icon.active {
+  background: rgba(139, 92, 246, 0.14);
+  border-color: var(--accent);
+  color: var(--accent-light);
+}
 .btn-sm { width: 32px; height: 32px; }
 
 /* ─── Status Banner ──────────────────────────────────────────── */
@@ -519,28 +524,40 @@ body {
 .settings-group {
   display: flex; flex-direction: column; gap: 14px; margin-top: 8px;
 }
+.settings-panel { scroll-margin-top: 52px; }
 .settings-item {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 14px; border-radius: var(--radius-sm);
+  gap: 16px; padding: 12px 14px; border-radius: var(--radius-sm);
   background: var(--bg-glass); border: 1px solid var(--border);
 }
 .settings-item-info {
-  display: flex; flex-direction: column; gap: 4px;
+  display: flex; flex: 1; min-width: 0; flex-direction: column; gap: 4px;
 }
 .settings-item-title {
   font-size: 0.9rem; font-weight: 600; color: var(--text-primary);
 }
 .settings-item-desc {
-  font-size: 0.75rem; color: var(--text-secondary);
+  font-size: 0.75rem; line-height: 1.45; color: var(--text-secondary);
+  overflow-wrap: anywhere;
 }
 .settings-divider {
   height: 1px; background: var(--border); margin: 8px 0;
+}
+.settings-section-title {
+  margin-bottom: 2px; font-size: 0.75rem; font-weight: 700;
+  color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;
+}
+.component-status-list {
+  display: flex; flex-direction: column; gap: 10px;
 }
 .component-status-card {
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 14px; border-radius: var(--radius-sm);
   background: var(--bg-glass); border: 1px solid var(--border);
+  transition: border-color 0.2s, background 0.2s, transform 0.2s;
 }
+.component-status-card:hover { border-color: var(--border-hover); background: rgba(139, 92, 246, 0.035); }
+.app-update-card { border-color: rgba(139, 92, 246, 0.18); }
 .component-info {
   display: flex; align-items: center; gap: 12px;
 }
@@ -569,6 +586,22 @@ body {
 }
 .btn-update-tool:hover:not(:disabled) { background: rgba(139, 92, 246, 0.2); }
 .btn-update-tool:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-update-tool.install-ready {
+  color: white; border-color: transparent; background: var(--gradient-1);
+}
+.btn-update-tool.install-ready:hover:not(:disabled) {
+  background: var(--gradient-1); transform: translateY(-1px);
+}
+
+@media (max-width: 520px) {
+  .settings-panel { padding: 16px; }
+  .settings-item, .component-status-card { align-items: flex-start; }
+  .settings-item .switch { margin-top: 2px; }
+  .component-status-card { gap: 12px; }
+  .component-info { min-width: 0; }
+  .component-details { min-width: 0; }
+  .component-version, .component-status-text { overflow-wrap: anywhere; }
+}
 
 /* Toggle Switch */
 .switch {
@@ -586,3 +619,11 @@ body {
 input:checked + .slider { background-color: rgba(139, 92, 246, 0.2); border-color: var(--accent); }
 input:checked + .slider:before { transform: translateX(20px); background-color: var(--accent-light); }
 
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

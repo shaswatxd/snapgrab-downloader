@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const { spawn, execSync } = require('child_process');
 const https = require('https');
+const { autoUpdater } = require('electron-updater');
 
 // ─── Paths ──────────────────────────────────────────────────────
 const USER_DATA_DIR = app.getPath('userData');
@@ -19,7 +20,8 @@ if (!fs.existsSync(BIN_DIR)) fs.mkdirSync(BIN_DIR, { recursive: true });
 let settings = {
   downloadsDir: DOWNLOADS_DIR,
   autoUpdateYtdlp: true,
-  autoUpdateFfmpeg: false,
+  autoUpdateFfmpeg: true,
+  autoUpdateApp: true,
   lastAppVersion: "",
   localFfmpegTag: "none"
 };
@@ -94,6 +96,123 @@ function initializeBinaries() {
 }
 
 let mainWindow;
+let ytdlpUpdateTask = null;
+let ffmpegUpdateTask = null;
+let appUpdaterInitialized = false;
+let appUpdateState = {
+  status: 'idle',
+  currentVersion: app.getVersion(),
+  availableVersion: null,
+  percent: 0,
+  downloaded: false,
+  message: 'Ready to check for updates'
+};
+
+function sendAppUpdateStatus(patch) {
+  appUpdateState = { ...appUpdateState, ...patch };
+  mainWindow?.webContents.send('app-update-status', appUpdateState);
+}
+
+function setupAppUpdater() {
+  if (appUpdaterInitialized || !app.isPackaged) return;
+  appUpdaterInitialized = true;
+  autoUpdater.autoDownload = true;
+  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.allowPrerelease = false;
+
+  autoUpdater.on('checking-for-update', () => {
+    sendAppUpdateStatus({
+      status: 'checking',
+      percent: 0,
+      downloaded: false,
+      message: 'Checking for a SnapGrab update...'
+    });
+  });
+  autoUpdater.on('update-available', (info) => {
+    sendAppUpdateStatus({
+      status: 'downloading',
+      availableVersion: info.version,
+      message: `SnapGrab ${info.version} is available. Downloading...`
+    });
+  });
+  autoUpdater.on('download-progress', (progress) => {
+    const percent = Math.round(progress.percent || 0);
+    sendAppUpdateStatus({
+      status: 'downloading',
+      percent,
+      message: `Downloading app update: ${percent}%`
+    });
+  });
+  autoUpdater.on('update-not-available', (info) => {
+    sendAppUpdateStatus({
+      status: 'uptodate',
+      availableVersion: info?.version || app.getVersion(),
+      percent: 0,
+      downloaded: false,
+      message: 'SnapGrab is up to date'
+    });
+  });
+  autoUpdater.on('update-downloaded', (info) => {
+    sendAppUpdateStatus({
+      status: 'downloaded',
+      availableVersion: info.version,
+      percent: 100,
+      downloaded: true,
+      message: `SnapGrab ${info.version} is ready. Restart to install.`
+    });
+  });
+  autoUpdater.on('error', (err) => {
+    sendAppUpdateStatus({
+      status: 'error',
+      downloaded: false,
+      message: `App update failed: ${err.message}`
+    });
+  });
+}
+
+async function checkForAppUpdates(force = false) {
+  const activeSettings = loadSettings();
+  if (!force && activeSettings.autoUpdateApp === false) {
+    return { success: false, reason: 'disabled', state: appUpdateState };
+  }
+  if (!app.isPackaged) {
+    sendAppUpdateStatus({
+      status: 'development',
+      message: 'App updates are available in installed builds',
+      currentVersion: app.getVersion()
+    });
+    return { success: true, skipped: true, reason: 'development', state: appUpdateState };
+  }
+
+  setupAppUpdater();
+  try {
+    const result = await autoUpdater.checkForUpdates();
+    return {
+      success: true,
+      updateInfo: result?.updateInfo || null,
+      state: appUpdateState
+    };
+  } catch (err) {
+    sendAppUpdateStatus({ status: 'error', message: `App update failed: ${err.message}` });
+    return { success: false, error: err.message, state: appUpdateState };
+  }
+}
+
+function runYtDlpUpdate(force = false) {
+  if (ytdlpUpdateTask) return ytdlpUpdateTask;
+  ytdlpUpdateTask = checkAndAutoUpdateYtDlp(force).finally(() => {
+    ytdlpUpdateTask = null;
+  });
+  return ytdlpUpdateTask;
+}
+
+function runFfmpegUpdate(force = false) {
+  if (ffmpegUpdateTask) return ffmpegUpdateTask;
+  ffmpegUpdateTask = checkAndAutoUpdateFfmpeg(force).finally(() => {
+    ffmpegUpdateTask = null;
+  });
+  return ffmpegUpdateTask;
+}
 
 // ─── Single Instance Lock ───────────────────────────────────────
 const gotTheLock = app.requestSingleInstanceLock();
@@ -135,12 +254,14 @@ function createWindow() {
 app.whenReady().then(() => {
   initializeBinaries();
   createWindow();
+  setupAppUpdater();
   
   // Run background updates after 3 seconds
   mainWindow?.once('ready-to-show', () => {
     setTimeout(() => {
-      checkAndAutoUpdateYtDlp().catch(console.error);
-      checkAndAutoUpdateFfmpeg().catch(console.error);
+      runYtDlpUpdate().catch(console.error);
+      runFfmpegUpdate().catch(console.error);
+      checkForAppUpdates().catch(console.error);
     }, 3000);
   });
 
@@ -347,11 +468,25 @@ ipcMain.handle('save-settings', (event, newSettings) => {
 });
 
 ipcMain.handle('check-ytdlp-update', async (event, force = false) => {
-  return await checkAndAutoUpdateYtDlp(force);
+  return await runYtDlpUpdate(force);
 });
 
 ipcMain.handle('check-ffmpeg-update', async (event, force = false) => {
-  return await checkAndAutoUpdateFfmpeg(force);
+  return await runFfmpegUpdate(force);
+});
+
+ipcMain.handle('get-app-update-state', () => appUpdateState);
+
+ipcMain.handle('check-app-update', async (event, force = false) => {
+  return await checkForAppUpdates(force);
+});
+
+ipcMain.handle('install-app-update', () => {
+  if (!app.isPackaged || !appUpdateState.downloaded) {
+    return { success: false, error: 'No downloaded app update is ready' };
+  }
+  setImmediate(() => autoUpdater.quitAndInstall(false, true));
+  return { success: true };
 });
 
 ipcMain.handle('get-bin-versions', async () => {

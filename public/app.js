@@ -58,6 +58,10 @@ async function init() {
     window.api.onUpdaterProgress((data) => {
       handleUpdaterProgress(data);
     });
+
+    window.api.onAppUpdateStatus((data) => {
+      handleAppUpdateStatus(data, true);
+    });
   } catch { showToast('Failed to check status', 'error'); }
 }
 init();
@@ -384,7 +388,7 @@ $('btnSetupFfmpeg').addEventListener('click', async () => {
 
 // ─── History ────────────────────────────────────────────────────
 btnHistory.addEventListener('click', () => {
-  settingsPanel.classList.add('hidden');
+  closeSettings();
   toggleHistory();
 });
 btnCloseHistory.addEventListener('click', () => historyPanel.classList.add('hidden'));
@@ -497,8 +501,12 @@ const settingsPanel = $('settingsPanel');
 const btnCloseSettings = $('btnCloseSettings');
 const btnSettingsChangePath = $('btnSettingsChangePath');
 const settingsSavePath = $('settingsSavePath');
+const chkAutoUpdateApp = $('chkAutoUpdateApp');
 const chkAutoUpdateYtdlp = $('chkAutoUpdateYtdlp');
 const chkAutoUpdateFfmpeg = $('chkAutoUpdateFfmpeg');
+const appVersionText = $('appVersionText');
+const appUpdateStatus = $('appUpdateStatus');
+const btnUpdateApp = $('btnUpdateApp');
 const ytdlpVersionText = $('ytdlpVersionText');
 const ytdlpUpdateStatus = $('ytdlpUpdateStatus');
 const btnUpdateYtdlp = $('btnUpdateYtdlp');
@@ -507,35 +515,52 @@ const ffmpegUpdateStatus = $('ffmpegUpdateStatus');
 const btnUpdateFfmpeg = $('btnUpdateFfmpeg');
 
 btnSettings.addEventListener('click', toggleSettings);
-btnCloseSettings.addEventListener('click', () => settingsPanel.classList.add('hidden'));
+btnCloseSettings.addEventListener('click', closeSettings);
+
+function closeSettings() {
+  settingsPanel.classList.add('hidden');
+  btnSettings.classList.remove('active');
+  btnSettings.setAttribute('aria-expanded', 'false');
+}
 
 async function toggleSettings() {
   if (!settingsPanel.classList.contains('hidden')) {
-    settingsPanel.classList.add('hidden');
+    closeSettings();
     return;
   }
   historyPanel.classList.add('hidden'); // Close history panel
-  await refreshSettingsUI();
   settingsPanel.classList.remove('hidden');
+  btnSettings.classList.add('active');
+  btnSettings.setAttribute('aria-expanded', 'true');
+  settingsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  await refreshSettingsUI();
 }
 
 async function refreshSettingsUI() {
   try {
-    const activeSettings = await window.api.getSettings();
+    const [activeSettings, versions, appState] = await Promise.all([
+      window.api.getSettings(),
+      window.api.getBinVersions(),
+      window.api.getAppUpdateState()
+    ]);
     settingsSavePath.textContent = activeSettings.downloadsDir || 'Not set';
+    chkAutoUpdateApp.checked = activeSettings.autoUpdateApp !== false;
     chkAutoUpdateYtdlp.checked = !!activeSettings.autoUpdateYtdlp;
     chkAutoUpdateFfmpeg.checked = !!activeSettings.autoUpdateFfmpeg;
-    
-    // Fetch current binary versions
-    const versions = await window.api.getBinVersions();
     ytdlpVersionText.textContent = versions.ytdlp;
     ffmpegVersionText.textContent = versions.ffmpeg;
+    handleAppUpdateStatus(appState);
   } catch (err) {
     showToast('Failed to load settings: ' + err.message, 'error');
   }
 }
 
 // Toggle Auto Updates
+chkAutoUpdateApp.addEventListener('change', async () => {
+  await window.api.saveSettings({ autoUpdateApp: chkAutoUpdateApp.checked });
+  showToast('App auto-update setting saved!', 'success');
+});
+
 chkAutoUpdateYtdlp.addEventListener('change', async () => {
   await window.api.saveSettings({ autoUpdateYtdlp: chkAutoUpdateYtdlp.checked });
   showToast('Settings saved!', 'success');
@@ -557,6 +582,41 @@ btnSettingsChangePath.addEventListener('click', async () => {
 });
 
 // Manual Updates
+btnUpdateApp.addEventListener('click', async () => {
+  if (btnUpdateApp.dataset.action === 'install') {
+    btnUpdateApp.disabled = true;
+    btnUpdateApp.textContent = 'Restarting...';
+    const result = await window.api.installAppUpdate();
+    if (!result.success) {
+      btnUpdateApp.disabled = false;
+      btnUpdateApp.textContent = 'Restart & Update';
+      showToast(result.error || 'App update is not ready yet', 'error');
+    }
+    return;
+  }
+
+  btnUpdateApp.disabled = true;
+  btnUpdateApp.textContent = 'Checking...';
+  appUpdateStatus.textContent = 'Checking for a SnapGrab update...';
+  appUpdateStatus.style.color = 'var(--warning)';
+  try {
+    const result = await window.api.checkAppUpdate(true);
+    if (!result.success) {
+      showToast(result.error || 'Unable to check for app updates', 'error');
+    } else if (result.skipped && result.reason === 'development') {
+      showToast('App updater works in the installed build', 'info');
+    }
+  } catch (err) {
+    showToast('App update check failed: ' + err.message, 'error');
+    handleAppUpdateStatus({ status: 'error', message: err.message });
+  } finally {
+    if (btnUpdateApp.dataset.action !== 'install' && btnUpdateApp.textContent === 'Checking...') {
+      btnUpdateApp.disabled = false;
+      btnUpdateApp.textContent = 'Check';
+    }
+  }
+});
+
 btnUpdateYtdlp.addEventListener('click', async () => {
   btnUpdateYtdlp.disabled = true;
   btnUpdateYtdlp.textContent = 'Checking...';
@@ -637,6 +697,8 @@ function handleUpdaterStatus(data) {
   }
 
   if (data.status === 'updated') {
+    if (data.type === 'ytdlp') statusBanner.classList.add('hidden');
+    if (data.type === 'ffmpeg') $('ffmpegBanner').classList.add('hidden');
     showToast(data.message, 'success');
   } else if (data.status === 'error') {
     showToast(data.message, 'error');
@@ -648,5 +710,36 @@ function handleUpdaterProgress(data) {
   if (statusEl) {
     statusEl.textContent = `Downloading: ${data.percent}%`;
     statusEl.style.color = 'var(--warning)';
+  }
+}
+
+function handleAppUpdateStatus(data = {}, notify = false) {
+  if (!appUpdateStatus || !btnUpdateApp || !appVersionText) return;
+
+  const currentVersion = data.currentVersion || '1.1.0';
+  appVersionText.textContent = `Version ${currentVersion}`;
+  appUpdateStatus.textContent = data.message || 'Ready to check for updates';
+  btnUpdateApp.classList.remove('install-ready');
+  btnUpdateApp.dataset.action = 'check';
+
+  if (data.status === 'checking') {
+    appUpdateStatus.style.color = 'var(--warning)';
+    btnUpdateApp.disabled = true;
+    btnUpdateApp.textContent = 'Checking...';
+  } else if (data.status === 'downloading') {
+    appUpdateStatus.style.color = 'var(--warning)';
+    btnUpdateApp.disabled = true;
+    btnUpdateApp.textContent = `${data.percent || 0}%`;
+  } else if (data.status === 'downloaded' || data.downloaded) {
+    appUpdateStatus.style.color = 'var(--success)';
+    btnUpdateApp.disabled = false;
+    btnUpdateApp.textContent = 'Restart & Update';
+    btnUpdateApp.dataset.action = 'install';
+    btnUpdateApp.classList.add('install-ready');
+    if (notify) showToast(data.message || 'App update is ready to install', 'success');
+  } else {
+    appUpdateStatus.style.color = data.status === 'error' ? 'var(--error)' : 'var(--success)';
+    btnUpdateApp.disabled = false;
+    btnUpdateApp.textContent = 'Check';
   }
 }

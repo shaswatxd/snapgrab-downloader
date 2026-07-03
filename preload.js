@@ -28,6 +28,9 @@ contextBridge.exposeInMainWorld('api', {
   checkYtDlpUpdate: (force) => ipcRenderer.invoke('check-ytdlp-update', force),
   checkFfmpegUpdate: (force) => ipcRenderer.invoke('check-ffmpeg-update', force),
   getBinVersions: () => ipcRenderer.invoke('get-bin-versions'),
+  getAppUpdateState: () => ipcRenderer.invoke('get-app-update-state'),
+  checkAppUpdate: (force) => ipcRenderer.invoke('check-app-update', force),
+  installAppUpdate: () => ipcRenderer.invoke('install-app-update'),
 
   // Listeners
   onSetupProgress: (cb) => ipcRenderer.on('setup-progress', (_, p) => cb(p)),
@@ -37,6 +40,7 @@ contextBridge.exposeInMainWorld('api', {
   onDownloadError: (id, cb) => ipcRenderer.on(`dl-error:${id}`, (_, d) => cb(d)),
   onUpdaterStatus: (cb) => ipcRenderer.on('updater-status', (_, s) => cb(s)),
   onUpdaterProgress: (cb) => ipcRenderer.on('updater-progress', (_, p) => cb(p)),
+  onAppUpdateStatus: (cb) => ipcRenderer.on('app-update-status', (_, s) => cb(s)),
 
   removeListeners: (id) => {
     ipcRenderer.removeAllListeners(`dl-progress:${id}`);

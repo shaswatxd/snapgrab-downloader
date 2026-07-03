@@ -1,86 +1,69 @@
 @echo off
-setlocal enabledelayedexpansion
-title SnapGrab Dependency Installer
+setlocal EnableExtensions EnableDelayedExpansion
+title SnapGrab - yt-dlp and FFmpeg Installer
 
-:: Set UTF-8 encoding for unicode symbols (fixes checkmark character rendering)
-chcp 65001 >nul
+set "INSTALL_DIR=%APPDATA%\snapgrab\bin"
+set "WORK_DIR=%TEMP%\snapgrab-dependencies-%RANDOM%"
+set "YTDLP_URL=https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe"
+set "FFMPEG_URL=https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
 
-:: Check for Administrator privileges
-net session >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [*] Requesting Administrator privileges...
-    powershell -Command "Start-Process -FilePath '%comspec%' -ArgumentList '/c %~s0 %*' -Verb RunAs"
-    exit /b
-)
-
-echo ===================================================
-echo   SnapGrab - yt-dlp & FFmpeg Dependency Installer
-echo ===================================================
+echo ============================================================
+echo   SnapGrab Dependency Installer
+echo   Installs the latest yt-dlp, FFmpeg and FFprobe
+echo ============================================================
+echo.
+echo Install folder: %INSTALL_DIR%
+echo No administrator permission is required.
 echo.
 
-:: Define install directory (C:\SnapGrab is universal and space-free, avoiding elevation profile bugs)
-set "INSTALL_DIR=C:\SnapGrab"
 if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
+if errorlevel 1 goto :error
+mkdir "%WORK_DIR%"
+if errorlevel 1 goto :error
 
-echo [*] Creating installation folder at: %INSTALL_DIR%
+echo [1/4] Downloading latest yt-dlp...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -UseBasicParsing -Uri $env:YTDLP_URL -OutFile (Join-Path $env:WORK_DIR 'yt-dlp.exe')"
+if errorlevel 1 goto :error
+if not exist "%WORK_DIR%\yt-dlp.exe" goto :error
 
-:: Download yt-dlp.exe using curl
-echo [*] Downloading yt-dlp...
-curl -L -o "%INSTALL_DIR%\yt-dlp.exe" "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.exe"
-if %errorlevel% neq 0 (
-    echo [!] Failed to download yt-dlp.
-    goto error
-)
-echo [✓] yt-dlp downloaded successfully.
+echo [2/4] Downloading latest FFmpeg package...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$ProgressPreference='SilentlyContinue'; [Net.ServicePointManager]::SecurityProtocol=[Net.SecurityProtocolType]::Tls12; Invoke-WebRequest -UseBasicParsing -Uri $env:FFMPEG_URL -OutFile (Join-Path $env:WORK_DIR 'ffmpeg.zip')"
+if errorlevel 1 goto :error
+if not exist "%WORK_DIR%\ffmpeg.zip" goto :error
+
+echo [3/4] Extracting and validating binaries...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$extract=Join-Path $env:WORK_DIR 'ffmpeg'; Expand-Archive -LiteralPath (Join-Path $env:WORK_DIR 'ffmpeg.zip') -DestinationPath $extract -Force; $ffmpeg=Get-ChildItem -LiteralPath $extract -Filter ffmpeg.exe -Recurse | Select-Object -First 1; $ffprobe=Get-ChildItem -LiteralPath $extract -Filter ffprobe.exe -Recurse | Select-Object -First 1; if(-not $ffmpeg -or -not $ffprobe){ throw 'FFmpeg package did not contain the required files' }; Copy-Item -LiteralPath $ffmpeg.FullName -Destination (Join-Path $env:INSTALL_DIR 'ffmpeg.exe') -Force; Copy-Item -LiteralPath $ffprobe.FullName -Destination (Join-Path $env:INSTALL_DIR 'ffprobe.exe') -Force; Copy-Item -LiteralPath (Join-Path $env:WORK_DIR 'yt-dlp.exe') -Destination (Join-Path $env:INSTALL_DIR 'yt-dlp.exe') -Force"
+if errorlevel 1 goto :error
+
+if not exist "%INSTALL_DIR%\yt-dlp.exe" goto :error
+if not exist "%INSTALL_DIR%\ffmpeg.exe" goto :error
+if not exist "%INSTALL_DIR%\ffprobe.exe" goto :error
+
+echo [4/4] Adding SnapGrab tools to your user PATH...
+powershell -NoProfile -ExecutionPolicy Bypass -Command ^
+  "$dir=$env:INSTALL_DIR; $entries=@([Environment]::GetEnvironmentVariable('Path','User') -split ';' | Where-Object { $_ }); if($entries -notcontains $dir){ [Environment]::SetEnvironmentVariable('Path', (($entries + $dir) -join ';'), 'User') }"
+if errorlevel 1 goto :error
+
+rmdir /s /q "%WORK_DIR%" >nul 2>&1
 echo.
-
-:: Download FFmpeg zip using curl
-echo [*] Downloading FFmpeg (GPL Shared Build)...
-curl -L -o "%INSTALL_DIR%\ffmpeg.zip" "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-win64-gpl.zip"
-if %errorlevel% neq 0 (
-    echo [!] Failed to download FFmpeg zip.
-    goto error
-)
-echo [✓] FFmpeg zip downloaded.
+echo ============================================================
+echo   Installation completed successfully.
+echo ============================================================
 echo.
-
-:: Extract FFmpeg zip using powershell
-echo [*] Extracting FFmpeg...
-powershell -Command "Expand-Archive -Path '%INSTALL_DIR%\ffmpeg.zip' -DestinationPath '%INSTALL_DIR%' -Force"
-if %errorlevel% neq 0 (
-    echo [!] Failed to extract FFmpeg.
-    goto error
-)
-
-:: Move ffmpeg.exe and ffprobe.exe
-echo [*] Copying binaries...
-powershell -Command "$ffDir = Get-ChildItem '%INSTALL_DIR%' -Directory -Filter 'ffmpeg-*' | Select-Object -First 1; if ($ffDir) { Copy-Item (Join-Path $ffDir.FullName 'bin\ffmpeg.exe') '%INSTALL_DIR%\ffmpeg.exe' -Force; Copy-Item (Join-Path $ffDir.FullName 'bin\ffprobe.exe') '%INSTALL_DIR%\ffprobe.exe' -Force; Remove-Item $ffDir.FullName -Recurse -Force }"
-
-:: Clean up zip
-if exist "%INSTALL_DIR%\ffmpeg.zip" del "%INSTALL_DIR%\ffmpeg.zip"
-echo [✓] FFmpeg extracted and cleaned up.
+echo SnapGrab will use these tools automatically.
+echo You can also update them later from SnapGrab Settings.
 echo.
-
-:: Add to PATH (System PATH environment variable so it works globally)
-echo [*] Adding %INSTALL_DIR% to System PATH...
-powershell -Command "$oldPath = [Environment]::GetEnvironmentVariable('Path', 'Machine'); if ($oldPath -notlike '*%INSTALL_DIR%*') { [Environment]::SetEnvironmentVariable('Path', $oldPath + ';%INSTALL_DIR%', 'Machine') }"
-set "PATH=%PATH%;%INSTALL_DIR%"
-
-echo.
-echo ===================================================
-echo   [✓] INSTALLATION COMPLETED SUCCESSFULLY!
-echo ===================================================
-echo.
-echo Binaries installed at: %INSTALL_DIR%
-echo Added to your System PATH environment variable.
-echo.
-echo Press any key to exit...
-pause >nul
+pause
 exit /b 0
 
 :error
 echo.
-echo [!] An error occurred during installation.
+echo Installation failed. Please check your internet connection
+echo and try the script again.
+if exist "%WORK_DIR%" rmdir /s /q "%WORK_DIR%" >nul 2>&1
 echo.
 pause
 exit /b 1

@@ -1,13 +1,15 @@
 {
   "name": "snapgrab",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "SnapGrab - Premium Media Downloader",
   "main": "main.js",
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
     "build": "electron-builder --win",
-    "pack": "electron-builder --dir"
+    "pack": "electron-builder --dir",
+    "release": "electron-builder --win --publish always",
+    "push": "git add . && git commit -m \"update\" && git push && npm run release"
   },
   "keywords": [],
   "author": "SnapGrab",
@@ -21,27 +23,35 @@
     "appId": "com.snapgrab.app",
     "productName": "SnapGrab",
     "win": {
-      "target": ["nsis", "portable"],
+      "target": [
+        "nsis",
+        "portable"
+      ],
       "icon": "public/icon.png",
-      "signAndEditExecutable": false
+      "signAndEditExecutable": false,
+      "artifactName": "SnapGrab.${version}.${ext}",
+      "publish": {
+        "provider": "github",
+        "owner": "shaswatxd",
+        "repo": "snapgrab-downloader",
+        "releaseType": "release"
+      }
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "SnapGrab.Setup.exe"
+    },
+    "portable": {
+      "artifactName": "SnapGrab.Portable.exe"
     },
     "files": [
       "main.js",
       "preload.js",
       "public/**/*"
-    ],
-    "extraResources": [
-      {
-        "from": "bin/",
-        "to": "bin/",
-        "filter": [
-          "**/*"
-        ]
-      }
     ]
+  },
+  "dependencies": {
+    "electron-updater": "^6.8.9"
   }
 }

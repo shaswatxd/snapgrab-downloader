@@ -50,24 +50,25 @@
   <section class="hero">
     <div class="hero-container">
       <div class="badge-container">
-        <span class="hero-badge">✨ Version 1.0.0 Now Available</span>
+        <span class="hero-badge">✨ Always Updated Through GitHub Releases</span>
       </div>
       <h1 class="hero-title">Download High-Quality Media, <br><span class="gradient-text">Instantly & Effortlessly</span></h1>
       <p class="hero-subtitle">SnapGrab is a premium, glassmorphic desktop downloader powered by yt-dlp and FFmpeg. Drag, drop, fetch, and download from over 1,000 websites in HD quality.</p>
       
       <div class="hero-actions">
-        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/download/v1.0.0/SnapGrab.Setup.1.0.0.exe" class="btn-primary">
+        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Setup.exe" class="btn-primary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span>Download Installer (Windows)</span>
         </a>
-        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/download/v1.0.0/SnapGrab.1.0.0.exe" class="btn-secondary">
+        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Portable.exe" class="btn-secondary" title="Portable builds do not install app updates automatically">
           <span>Portable Edition</span>
         </a>
-        <a href="install-dependencies.bat" download class="btn-github" style="padding: 14px 28px; border-radius: var(--radius-md); font-size: 0.95rem; font-weight: 700;">
+        <a href="install-dependencies.bat" download class="btn-dependencies">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span>Download Dependency Script (.bat)</span>
+          <span>Install yt-dlp + FFmpeg (.bat)</span>
         </a>
       </div>
+      <p class="hero-note">The dependency script installs both tools without admin access. Installed SnapGrab builds update the app, yt-dlp and FFmpeg directly from Settings.</p>
 
       <!-- App Mockup UI -->
       <div class="app-mockup-wrapper">
@@ -194,17 +195,17 @@
         <div class="update-card">
           <div class="update-icon">🤖</div>
           <h4>Silent Background Checks</h4>
-          <p>On app startup, SnapGrab performs a non-intrusive query to the GitHub API. If a newer engine is released, it downloads and replaces it in the background.</p>
+          <p>On app startup, SnapGrab checks official releases. New app versions, yt-dlp and FFmpeg updates download in the background.</p>
         </div>
         <div class="update-card">
           <div class="update-icon">⚙️</div>
-          <h4>Writable User Data Directory</h4>
-          <p>Rather than writing inside locked Windows `C:\Program Files`, SnapGrab extracts and updates binaries directly in the writable `%APPDATA%/SnapGrab/bin` directory, preventing administrator permission prompt blocks.</p>
+          <h4>No Admin Dependency Setup</h4>
+          <p>The one-click script installs yt-dlp, FFmpeg and FFprobe in the writable SnapGrab data directory and adds it to your user PATH.</p>
         </div>
         <div class="update-card">
           <div class="update-icon">🛠️</div>
-          <h4>Manual Force Updates</h4>
-          <p>Want the bleeding-edge build? Just open Settings within the application and click "Update" on yt-dlp or FFmpeg to force an immediate fetch from upstream repository releases.</p>
+          <h4>In-App Update Controls</h4>
+          <p>Open Settings to check the SnapGrab app, yt-dlp or FFmpeg immediately. App updates install after one restart—no website revisit needed.</p>
         </div>
       </div>
     </div>
@@ -217,7 +218,7 @@
       <p class="hero-subtitle">Get the proper, fully packaged installer including yt-dlp and FFmpeg binaries. Install once, run forever.</p>
       
       <div class="hero-actions center">
-        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/download/v1.0.0/SnapGrab.Setup.1.0.0.exe" class="btn-primary">
+        <a href="https://github.com/shaswatxd/snapgrab-downloader/releases/latest/download/SnapGrab.Setup.exe" class="btn-primary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span>Download Installer for Windows</span>
         </a>

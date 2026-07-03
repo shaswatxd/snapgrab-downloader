@@ -53,7 +53,7 @@
         <button id="btnOpenFolder" class="btn-icon" title="Open Downloads Folder">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
         </button>
-        <button id="btnSettings" class="btn-icon" title="Settings & Updates">
+        <button id="btnSettings" class="btn-icon" title="Settings & Updates" aria-label="Settings & Updates" aria-controls="settingsPanel" aria-expanded="false">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         </button>
       </div>
@@ -215,10 +215,10 @@
     </section>
 
     <!-- Settings & Updates Panel -->
-    <section id="settingsPanel" class="history-panel hidden">
+    <section id="settingsPanel" class="history-panel settings-panel hidden" aria-labelledby="settingsTitle">
       <div class="history-header">
-        <h3>Settings & Updates</h3>
-        <button id="btnCloseSettings" class="btn-icon btn-sm" title="Close Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <h3 id="settingsTitle">Settings & Updates</h3>
+        <button id="btnCloseSettings" class="btn-icon btn-sm" title="Close Settings" aria-label="Close Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
       
       <div class="settings-group">
@@ -236,80 +236,15 @@
         <!-- Auto Update Toggles -->
         <div class="settings-item">
           <div class="settings-item-info">
-            <span class="settings-item-title">Auto-update yt-dlp</span>
-            <span class="settings-item-desc">Check and update yt-dlp automatically on app startup</span>
+            <span class="settings-item-title">Auto-update SnapGrab</span>
+            <span class="settings-item-desc">Download new app versions automatically from official GitHub releases</span>
           </div>
           <label class="switch">
-            <input type="checkbox" id="chkAutoUpdateYtdlp" checked />
+            <input type="checkbox" id="chkAutoUpdateApp" checked />
             <span class="slider"></span>
           </label>
         </div>
 
-        <div class="settings-item">
-          <div class="settings-item-info">
-            <span class="settings-item-title">Auto-update FFmpeg</span>
-            <span class="settings-item-desc">Check and update FFmpeg automatically on app startup</span>
-          </div>
-          <label class="switch">
-            <input type="checkbox" id="chkAutoUpdateFfmpeg" />
-            <span class="slider"></span>
-          </label>
-        </div>
-
-        <div class="settings-divider"></div>
-
-        <!-- Component Version Cards -->
-        <h3 style="font-size:0.85rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Component Status</h3>
-        <div style="display:flex; flex-direction:column; gap:10px;">
-          <!-- yt-dlp status card -->
-          <div class="component-status-card">
-            <div class="component-info">
-              <div class="component-icon">⬇️</div>
-              <div class="component-details">
-                <span class="component-name">yt-dlp</span>
-                <span id="ytdlpVersionText" class="component-version">Checking version...</span>
-                <span id="ytdlpUpdateStatus" class="component-status-text">Up to date</span>
-              </div>
-            </div>
-            <button id="btnUpdateYtdlp" class="btn-update-tool">Update</button>
-          </div>
-
-          <!-- ffmpeg status card -->
-          <div class="component-status-card">
-            <div class="component-info">
-              <div class="component-icon">🎬</div>
-              <div class="component-details">
-                <span class="component-name">FFmpeg</span>
-                <span id="ffmpegVersionText" class="component-version">Checking version...</span>
-                <span id="ffmpegUpdateStatus" class="component-status-text">Up to date</span>
-              </div>
-            </div>
-            <button id="btnUpdateFfmpeg" class="btn-update-tool">Update</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Settings & Updates Panel -->
-    <section id="settingsPanel" class="history-panel hidden">
-      <div class="history-header">
-        <h3>Settings & Updates</h3>
-        <button id="btnCloseSettings" class="btn-icon btn-sm" title="Close Settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-      </div>
-      
-      <div class="settings-group">
-        <!-- Save Directory -->
-        <div class="settings-item">
-          <div class="settings-item-info">
-            <span class="settings-item-title">Downloads Folder</span>
-            <span class="settings-item-desc" id="settingsSavePath">Loading...</span>
-          </div>
-          <button id="btnSettingsChangePath" class="btn-change-path">Change</button>
-        </div>
-
-        <div class="settings-divider"></div>
-
-        <!-- Auto Update Toggles -->
         <div class="settings-item">
           <div class="settings-item-info">
             <span class="settings-item-title">Auto-update yt-dlp</span>
@@ -327,7 +262,7 @@
             <span class="settings-item-desc">Check and update FFmpeg automatically on app startup</span>
           </div>
           <label class="switch">
-            <input type="checkbox" id="chkAutoUpdateFfmpeg" />
+            <input type="checkbox" id="chkAutoUpdateFfmpeg" checked />
             <span class="slider"></span>
           </label>
         </div>
@@ -335,8 +270,21 @@
         <div class="settings-divider"></div>
 
         <!-- Component Version Cards -->
-        <h3 style="font-size:0.85rem; font-weight:600; color:var(--text-secondary); text-transform:uppercase; letter-spacing:1px; margin-bottom:12px;">Component Status</h3>
-        <div style="display:flex; flex-direction:column; gap:10px;">
+        <h3 class="settings-section-title">Component Status</h3>
+        <div class="component-status-list">
+          <!-- SnapGrab app status card -->
+          <div class="component-status-card app-update-card">
+            <div class="component-info">
+              <div class="component-icon">✨</div>
+              <div class="component-details">
+                <span class="component-name">SnapGrab App</span>
+                <span id="appVersionText" class="component-version">Version 1.1.0</span>
+                <span id="appUpdateStatus" class="component-status-text" aria-live="polite">Ready to check for updates</span>
+              </div>
+            </div>
+            <button id="btnUpdateApp" class="btn-update-tool">Check</button>
+          </div>
+
           <!-- yt-dlp status card -->
           <div class="component-status-card">
             <div class="component-info">
