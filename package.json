@@ -11,7 +11,7 @@
     "pack": "npm run clean && electron-builder --dir",
     "release": "npm run clean && electron-builder --win --publish always",
     "deploy-website": "cd website && vercel --prod",
-    "push": "git add . && (git commit -m \"update\" || echo \"nothing to commit\") && npm version patch && git push --follow-tags && npm run release && npm run deploy-website"
+    "push": "node scripts/release.js"
   },
   "keywords": [],
   "author": "SnapGrab",
