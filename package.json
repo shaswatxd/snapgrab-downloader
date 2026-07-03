@@ -9,7 +9,7 @@
     "build": "electron-builder --win",
     "pack": "electron-builder --dir",
     "release": "electron-builder --win --publish always",
-    "push": "git add . && git commit -m \"update\" && git push && npm run release"
+    "push": "git add . && (git commit -m \"update\" || echo \"nothing to commit\") && git push && npm run release"
   },
   "keywords": [],
   "author": "SnapGrab",
