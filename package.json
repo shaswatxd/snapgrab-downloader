@@ -41,7 +41,7 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "artifactName": "SnapGrab.Setup.exe"
+      "artifactName": "SnapGrab.Setup.${version}.exe"
     },
     "portable": {
       "artifactName": "SnapGrab.Portable.exe"
