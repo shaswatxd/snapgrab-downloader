@@ -2,13 +2,24 @@
 setlocal enabledelayedexpansion
 title SnapGrab Dependency Installer
 
+:: Set UTF-8 encoding for unicode symbols (fixes checkmark character rendering)
+chcp 65001 >nul
+
+:: Check for Administrator privileges
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [*] Requesting Administrator privileges...
+    powershell -Command "Start-Process -FilePath '%comspec%' -ArgumentList '/c %~s0 %*' -Verb RunAs"
+    exit /b
+)
+
 echo ===================================================
 echo   SnapGrab - yt-dlp & FFmpeg Dependency Installer
 echo ===================================================
 echo.
 
-:: Define install directory
-set "INSTALL_DIR=%USERPROFILE%\SnapGrab"
+:: Define install directory (C:\SnapGrab is universal and space-free, avoiding elevation profile bugs)
+set "INSTALL_DIR=C:\SnapGrab"
 if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
 
 echo [*] Creating installation folder at: %INSTALL_DIR%
@@ -50,9 +61,9 @@ if exist "%INSTALL_DIR%\ffmpeg.zip" del "%INSTALL_DIR%\ffmpeg.zip"
 echo [✓] FFmpeg extracted and cleaned up.
 echo.
 
-:: Add to PATH (User PATH environment variable)
-echo [*] Adding %INSTALL_DIR% to User PATH...
-powershell -Command "$oldPath = [Environment]::GetEnvironmentVariable('Path', 'User'); if ($oldPath -notlike '*%INSTALL_DIR%*') { [Environment]::SetEnvironmentVariable('Path', $oldPath + ';%INSTALL_DIR%', 'User') }"
+:: Add to PATH (System PATH environment variable so it works globally)
+echo [*] Adding %INSTALL_DIR% to System PATH...
+powershell -Command "$oldPath = [Environment]::GetEnvironmentVariable('Path', 'Machine'); if ($oldPath -notlike '*%INSTALL_DIR%*') { [Environment]::SetEnvironmentVariable('Path', $oldPath + ';%INSTALL_DIR%', 'Machine') }"
 set "PATH=%PATH%;%INSTALL_DIR%"
 
 echo.
@@ -61,7 +72,7 @@ echo   [✓] INSTALLATION COMPLETED SUCCESSFULLY!
 echo ===================================================
 echo.
 echo Binaries installed at: %INSTALL_DIR%
-echo Added to your PATH environment variable.
+echo Added to your System PATH environment variable.
 echo.
 echo Press any key to exit...
 pause >nul
