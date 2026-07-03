@@ -10,7 +10,8 @@
     "build": "npm run clean && electron-builder --win",
     "pack": "npm run clean && electron-builder --dir",
     "release": "npm run clean && electron-builder --win --publish always",
-    "push": "git add . && (git commit -m \"update\" || echo \"nothing to commit\") && npm version patch && git push --follow-tags && npm run release"
+    "deploy-website": "cd website && vercel --prod",
+    "push": "git add . && (git commit -m \"update\" || echo \"nothing to commit\") && npm version patch && git push --follow-tags && npm run release && npm run deploy-website"
   },
   "keywords": [],
   "author": "SnapGrab",
@@ -39,11 +40,10 @@
     },
     "nsis": {
       "oneClick": false,
-      "allowToChangeInstallationDirectory": true,
-      "artifactName": "SnapGrab.Setup.${version}.exe"
+      "allowToChangeInstallationDirectory": true
     },
     "portable": {
-      "artifactName": "SnapGrab.Portable.${version}.exe"
+      "artifactName": "SnapGrab.Portable.exe"
     },
     "files": [
       "main.js",

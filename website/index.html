@@ -232,26 +232,8 @@
   </footer>
 
   <script>
-    // Dynamically fetch latest release version and update download links
-    fetch('https://api.github.com/repos/shaswatxd/snapgrab-downloader/releases/latest')
-      .then(res => res.json())
-      .then(data => {
-        const version = data.tag_name.replace('v', '');
-        const installerBtn = document.getElementById('download-installer');
-        const portableBtn = document.getElementById('download-portable');
-        const installerCTA = document.getElementById('download-installer-cta');
-        
-        if (installerBtn) {
-          installerBtn.href = `https://github.com/shaswatxd/snapgrab-downloader/releases/download/${data.tag_name}/SnapGrab.Setup.${version}.exe`;
-        }
-        if (portableBtn) {
-          portableBtn.href = `https://github.com/shaswatxd/snapgrab-downloader/releases/download/${data.tag_name}/SnapGrab.Portable.${version}.exe`;
-        }
-        if (installerCTA) {
-          installerCTA.href = `https://github.com/shaswatxd/snapgrab-downloader/releases/download/${data.tag_name}/SnapGrab.Setup.${version}.exe`;
-        }
-      })
-      .catch(err => console.error('Failed to fetch latest release:', err));
+    // Direct links to latest releases - GitHub automatically serves the latest version
+    // No need for API calls, GitHub /latest/ endpoint handles this
   </script>
 </body>
 </html>
