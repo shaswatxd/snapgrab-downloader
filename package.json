@@ -6,9 +6,10 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
-    "build": "electron-builder --win",
-    "pack": "electron-builder --dir",
-    "release": "electron-builder --win --publish always",
+    "clean": "if (Test-Path dist) { Remove-Item -Recurse -Force dist }",
+    "build": "npm run clean && electron-builder --win",
+    "pack": "npm run clean && electron-builder --dir",
+    "release": "npm run clean && electron-builder --win --publish always",
     "push": "git add . && (git commit -m \"update\" || echo \"nothing to commit\") && npm version patch && git push --follow-tags && npm run release"
   },
   "keywords": [],
