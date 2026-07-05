@@ -100,6 +100,59 @@ urlInput.addEventListener('input', () => { btnFetch.disabled = !urlInput.value.t
 urlInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && urlInput.value.trim()) fetchVideoInfo(); });
 btnFetch.addEventListener('click', fetchVideoInfo);
 
+// ─── Context Menu (Right-Click on URL Input) ────────────────────
+const contextMenu = $('contextMenu');
+const ctxPaste = $('ctxPaste');
+const ctxSelectAll = $('ctxSelectAll');
+const ctxClear = $('ctxClear');
+
+function showContextMenu(e) {
+  e.preventDefault();
+  contextMenu.classList.remove('hidden');
+  const x = Math.min(e.clientX, window.innerWidth - 200);
+  const y = Math.min(e.clientY, window.innerHeight - 120);
+  contextMenu.style.left = x + 'px';
+  contextMenu.style.top = y + 'px';
+}
+
+function hideContextMenu() {
+  contextMenu.classList.add('hidden');
+}
+
+urlInput.addEventListener('contextmenu', showContextMenu);
+
+document.addEventListener('click', (e) => {
+  if (!contextMenu.contains(e.target)) hideContextMenu();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') hideContextMenu();
+});
+
+ctxPaste.addEventListener('click', async () => {
+  hideContextMenu();
+  try {
+    const text = await window.api.readClipboard();
+    if (text) {
+      urlInput.value = text;
+      btnFetch.disabled = !text.trim();
+      urlInput.focus();
+    }
+  } catch {}
+});
+
+ctxSelectAll.addEventListener('click', () => {
+  hideContextMenu();
+  urlInput.select();
+});
+
+ctxClear.addEventListener('click', () => {
+  hideContextMenu();
+  urlInput.value = '';
+  btnFetch.disabled = true;
+  urlInput.focus();
+});
+
 // ─── Fetch Video Info ───────────────────────────────────────────
 async function fetchVideoInfo() {
   const url = urlInput.value.trim();
