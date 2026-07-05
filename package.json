@@ -1,6 +1,6 @@
 {
   "name": "snapgrab",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "SnapGrab - Premium Media Downloader",
   "main": "main.js",
   "scripts": {
