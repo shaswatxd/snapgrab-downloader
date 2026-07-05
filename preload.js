@@ -1,4 +1,4 @@
-const { contextBridge, ipcRenderer, clipboard } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
   // Window controls
@@ -23,7 +23,7 @@ contextBridge.exposeInMainWorld('api', {
   setDownloadsDir: () => ipcRenderer.invoke('set-downloads-dir'),
 
   // Clipboard
-  readClipboard: () => clipboard.readText(),
+  readClipboard: () => ipcRenderer.invoke('read-clipboard'),
 
   // Settings & Updates
   getSettings: () => ipcRenderer.invoke('get-settings'),

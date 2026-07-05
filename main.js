@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell, dialog, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, shell, dialog, nativeImage, clipboard } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const { spawn, execSync } = require('child_process');
@@ -405,6 +405,8 @@ ipcMain.handle('get-status', () => ({
   nodejs: isNodeAvailable(),
   downloadsDir: DOWNLOADS_DIR,
 }));
+
+ipcMain.handle('read-clipboard', () => clipboard.readText());
 
 // ─── IPC: Setup FFmpeg ──────────────────────────────────────────
 ipcMain.handle('setup-ffmpeg', async () => {
