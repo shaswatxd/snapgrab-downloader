@@ -5,15 +5,91 @@ const path = require('path');
 
 // SVG icon template - same as in the app
 const iconSVG = `
-<svg width="256" height="256" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="iconGrad" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#a78bfa"/>
-      <stop offset="1" stop-color="#6366f1"/>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1b4b" />
+      <stop offset="40%" stop-color="#0f172a" />
+      <stop offset="100%" stop-color="#020617" />
     </linearGradient>
+    
+    <!-- Neon Glow Gradient -->
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="50%" stop-color="#818cf8" />
+      <stop offset="100%" stop-color="#38bdf8" />
+    </linearGradient>
+
+    <!-- Ring/Border Gradient -->
+    <linearGradient id="borderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a78bfa" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#6366f1" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.8" />
+    </linearGradient>
+
+    <!-- Glassmorphic Highlights -->
+    <linearGradient id="glassGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.0" />
+    </linearGradient>
+
+    <!-- Drop Shadow Filter -->
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#6366f1" flood-opacity="0.25" />
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+
+    <!-- Glow Filter -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
   </defs>
-  <rect width="32" height="32" rx="8" fill="url(#iconGrad)"/>
-  <path d="M16 8v10m0 0l4-4m-4 4l-4-4M10 22h12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Base Squircle (Background) -->
+  <rect width="256" height="256" rx="64" fill="url(#bgGrad)" />
+  
+  <!-- Subtle inner radial glow -->
+  <radialGradient id="innerGlow" cx="50%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#6366f1" stop-opacity="0.15" />
+    <stop offset="100%" stop-color="#6366f1" stop-opacity="0" />
+  </radialGradient>
+  <rect width="256" height="256" rx="64" fill="url(#innerGlow)" />
+
+  <!-- Outer Border -->
+  <rect x="6" y="6" width="244" height="244" rx="58" fill="none" stroke="url(#borderGrad)" stroke-width="4" />
+
+  <!-- Glassmorphic sheen on top half -->
+  <path d="M 6 64 C 6 32, 32 6, 64 6 L 192 6 C 224 6, 250 32, 250 64 L 250 128 C 150 140, 106 110, 6 128 Z" fill="url(#glassGrad)" />
+
+  <!-- The Icon Emblem (SnapGrab) -->
+  <g filter="url(#dropShadow)">
+    <!-- Outer Aperture Segment (Snap) -->
+    <path d="M 128 45 A 83 83 0 0 1 211 128 A 83 83 0 0 1 180 193" fill="none" stroke="url(#glowGrad)" stroke-width="8" stroke-linecap="round" opacity="0.25" />
+    <path d="M 128 211 A 83 83 0 0 1 45 128 A 83 83 0 0 1 76 63" fill="none" stroke="url(#glowGrad)" stroke-width="8" stroke-linecap="round" opacity="0.25" />
+
+    <!-- Sleek Arrow + Grab Claw/Wave -->
+    <!-- Sound/Media Wave / Downloading tray at bottom -->
+    <path d="M 75 185 C 100 195, 128 200, 128 200 C 128 200, 156 195, 181 185" fill="none" stroke="url(#glowGrad)" stroke-width="12" stroke-linecap="round" filter="url(#neonGlow)" />
+    
+    <!-- Grab/Media curve tray base (thicker solid background for tray) -->
+    <path d="M 85 185 C 105 192, 128 195, 128 195 C 128 195, 151 192, 171 185" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+
+    <!-- Downward Arrow (Multi-stage chevrons representing Snap & Grab) -->
+    <!-- First Chevron (Top, slightly semi-transparent for depth) -->
+    <path d="M 98 100 L 128 130 L 158 100" fill="none" stroke="url(#glowGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" opacity="0.7" />
+    
+    <!-- Second Chevron / Main Arrowhead (Bottom, solid and glowing) -->
+    <path d="M 98 135 L 128 165 L 158 135" fill="none" stroke="#ffffff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" filter="url(#neonGlow)" />
+    
+    <!-- Central fast-download lightning line in center -->
+    <path d="M 128 65 L 128 150" fill="none" stroke="url(#glowGrad)" stroke-width="12" stroke-linecap="round" filter="url(#neonGlow)" />
+    <path d="M 128 65 L 128 150" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" />
+  </g>
 </svg>
 `;
 

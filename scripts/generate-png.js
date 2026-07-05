@@ -22,8 +22,14 @@ const pngPath = path.join(__dirname, '..', 'public', 'icon.png');
 
 const svgContent = fs.readFileSync(svgPath, 'utf-8');
 
-// Create a 256x256 PNG from SVG using Canvas
-const sharp = require('sharp');
+let sharp;
+try {
+  sharp = require('sharp');
+} catch (e) {
+  // Sharp not installed, run fallback directly
+  runFallback();
+  return;
+}
 
 sharp(Buffer.from(svgContent))
   .resize(256, 256)
@@ -36,17 +42,20 @@ sharp(Buffer.from(svgContent))
   })
   .catch((error) => {
     log('⚠️  Sharp failed, trying alternative method...', 'blue');
-    
-    // Fallback: Copy SVG as PNG (Windows will handle it)
-    const publicDir = path.dirname(pngPath);
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
-    }
-    
-    // For development, copy SVG to public folder
-    const publicSvgPath = path.join(publicDir, 'icon.svg');
-    fs.copyFileSync(svgPath, publicSvgPath);
-    
-    log('✅ Icon copied to public folder', 'green');
-    log(`   📂 ${publicSvgPath}\n`, 'cyan');
+    runFallback();
   });
+
+function runFallback() {
+  // Fallback: Copy SVG as PNG (Windows will handle it)
+  const publicDir = path.dirname(pngPath);
+  if (!fs.existsSync(publicDir)) {
+    fs.mkdirSync(publicDir, { recursive: true });
+  }
+  
+  // For development, copy SVG to public folder
+  const publicSvgPath = path.join(publicDir, 'icon.svg');
+  fs.copyFileSync(svgPath, publicSvgPath);
+  
+  log('✅ Icon copied to public folder', 'green');
+  log(`   📂 ${publicSvgPath}\n`, 'cyan');
+}
