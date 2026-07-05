@@ -129,24 +129,31 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') hideContextMenu();
 });
 
-ctxPaste.addEventListener('click', async () => {
+ctxPaste.addEventListener('click', async (e) => {
+  e.stopPropagation();
   hideContextMenu();
   try {
     const text = await window.api.readClipboard();
     if (text) {
       urlInput.value = text;
-      btnFetch.disabled = !text.trim();
+      btnFetch.disabled = !urlInput.value.trim();
       urlInput.focus();
+    } else {
+      showToast('Clipboard is empty', 'error');
     }
-  } catch {}
+  } catch (err) {
+    showToast('Failed to read clipboard: ' + (err.message || err), 'error');
+  }
 });
 
-ctxSelectAll.addEventListener('click', () => {
+ctxSelectAll.addEventListener('click', (e) => {
+  e.stopPropagation();
   hideContextMenu();
   urlInput.select();
 });
 
-ctxClear.addEventListener('click', () => {
+ctxClear.addEventListener('click', (e) => {
+  e.stopPropagation();
   hideContextMenu();
   urlInput.value = '';
   btnFetch.disabled = true;
