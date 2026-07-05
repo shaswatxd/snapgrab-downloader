@@ -34,7 +34,7 @@
         "portable"
       ],
       "icon": "build/icon.ico",
-      "signAndEditExecutable": false,
+      "signAndEditExecutable": true,
       "publish": {
         "provider": "github",
         "owner": "shaswatxd",
@@ -52,7 +52,8 @@
     "files": [
       "main.js",
       "preload.js",
-      "public/**/*"
+      "public/**/*",
+      "build/icon.ico"
     ]
   },
   "dependencies": {
