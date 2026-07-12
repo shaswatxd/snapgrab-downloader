@@ -36,6 +36,7 @@
       </div>
       <div class="nav-links">
         <a href="#features">Features</a>
+        <a href="#how-to-use">How to Use</a>
         <a href="#engine">Engine Details</a>
         <a href="#updates">Auto-Updates</a>
         <a href="https://github.com/shaswatxd/snapgrab-downloader" class="btn-github" target="_blank">
@@ -143,8 +144,56 @@
     </div>
   </section>
 
+  <!-- How to Use Section -->
+  <section id="how-to-use" class="section alt-bg">
+    <div class="section-container">
+      <h2 class="section-title">Get Started in 3 Easy Steps</h2>
+      <p class="section-subtitle">Start downloading high-definition videos and audios within seconds. Here is how to use SnapGrab.</p>
+      
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-badge">Step 1</div>
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </div>
+          <h3>Install & Setup</h3>
+          <p>Download the installer and run the app. If yt-dlp or FFmpeg is missing, SnapGrab will offer to set them up automatically, or you can run our 1-click script.</p>
+        </div>
+        
+        <div class="step-card">
+          <div class="step-badge">Step 2</div>
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
+            </svg>
+          </div>
+          <h3>Paste Link or Batch URLs</h3>
+          <p>Copy any video, playlist, or audio link and paste it into the search bar, then click <strong>Fetch</strong>. For multiple downloads, switch to <strong>Batch Mode</strong> and paste one URL per line.</p>
+        </div>
+        
+        <div class="step-card">
+          <div class="step-badge">Step 3</div>
+          <div class="step-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="8 12 12 16 12 8"/>
+              <line x1="16" y1="12" x2="8" y2="12"/>
+            </svg>
+          </div>
+          <h3>Choose Format & Download</h3>
+          <p>Choose your desired resolution (up to 4K) and format (MP4, MP3, or WebM). Click <strong>Download Now</strong>, and find your files instantly saved in your designated Downloads folder.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Engine & Binaries Section -->
-  <section id="engine" class="section alt-bg">
+  <section id="engine" class="section">
     <div class="section-container">
       <div class="split-grid">
         <div class="split-content">
@@ -165,28 +214,29 @@
               <div>
                 <h4>FFmpeg & FFprobe Muxer</h4>
                 <p>Enables advanced demuxing and transcoding. Extracts pristine audio formats (MP3 at 320kbps) and handles audio-video synchronization issues dynamically.</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="split-graphic">
-        <div class="code-box">
-          <div class="code-box-header">
-            <span>Muxer Console Output</span>
-          </div>
-          <pre class="code-content"><code>[download] Destination: Rick Astley - Never Gonna Give You Up.mp4
+        <div class="split-graphic">
+          <div class="code-box">
+            <div class="code-box-header">
+              <span>Muxer Console Output</span>
+            </div>
+            <pre class="code-content"><code>[download] Destination: Rick Astley - Never Gonna Give You Up.mp4
 [download] 100% of 24.81MiB in 00:02 at 12.38MiB/s
 [Merger] Merging formats into "Never Gonna Give You Up.mp4"
 [ffmpeg] Muxing audio track (m4a) and video track (f303)
 [ffmpeg] Merged files successfully!
 ✓ Complete! File saved to Downloads/SnapGrab/</code></pre>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
   <!-- Auto Updates Section -->
-  <section id="updates" class="section">
+  <section id="updates" class="section alt-bg">
     <div class="section-container text-center">
       <h2 class="section-title">Zero-Maintenance Auto-Updates</h2>
       <p class="section-subtitle">Websites change their HTML structure daily, which breaks normal downloaders. SnapGrab solves this with a built-in silent components updater.</p>
