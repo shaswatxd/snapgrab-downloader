@@ -75,4 +75,4 @@ Installed NSIS builds check that release feed automatically and download new app
 ---
 
 ## 📄 License
-Released under the ISC License. Created for high-performance media downloading.
+Released under the All Rights Reserved license. Created for high-performance media downloading.
